@@ -1,0 +1,13 @@
+{
+  "name": "sahan",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix sahan-app install && npm --prefix sahan-app run build",
+    "dev": "npm --prefix sahan-app run dev",
+    "preview": "npm --prefix sahan-app run preview"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
