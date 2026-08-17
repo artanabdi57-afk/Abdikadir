@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npm run build:teach",
+  "outputDirectory": "teach-app/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
