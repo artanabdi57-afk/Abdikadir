@@ -1,0 +1,28 @@
+name: Sahan Teach build
+
+on:
+  push:
+    paths:
+      - 'teach-app/**'
+      - 'api/**'
+      - 'package.json'
+      - '.github/workflows/teach-build.yml'
+  pull_request:
+    paths:
+      - 'teach-app/**'
+      - 'api/**'
+      - 'package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npm --prefix teach-app install
+      - run: npm --prefix teach-app run build
+      - run: node --check api/index.js
