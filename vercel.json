@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build:teach",
-  "outputDirectory": "teach-app/dist",
+  "buildCommand": "npm run build",
+  "outputDirectory": "sahan-app/dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
