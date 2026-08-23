@@ -1,11 +1,12 @@
 {
-  "name": "sahan-teach-platform",
+  "name": "sahan-platform",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node api/index.js",
     "dev": "node --watch api/index.js",
+    "build": "npm --prefix sahan-app install && npm --prefix sahan-app run build",
     "build:teach": "npm --prefix teach-app install && npm --prefix teach-app run build"
   },
   "engines": { "node": ">=20.19.0" },
