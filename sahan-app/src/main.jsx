@@ -1,121 +1,86 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import SahanExperience from './sahan/SahanExperience.jsx'
 import LegacyApp from './App.jsx'
 import TeachApp from './teach/TeachApp.jsx'
+import Auth from './auth/Auth.jsx'
+import { supabase } from './lib/supabase.js'
 import './styles/index.css'
 
+const routeFromPath = () => {
+  const path = window.location.pathname
+  if (path.startsWith('/teach') || path.startsWith('/instructor') || path.startsWith('/admin')) return 'teach'
+  if (path.startsWith('/app')) return 'app'
+  if (path.startsWith('/signup')) return 'signup'
+  if (path.startsWith('/forgot-password')) return 'forgot'
+  if (path.startsWith('/reset-password')) return 'reset'
+  if (path.startsWith('/auth/callback')) return 'callback'
+  if (path.startsWith('/login')) return 'login'
+  return 'experience'
+}
+
 function Root() {
-  const [route, setRoute] = useState(() => {
-    const path = window.location.pathname;
-    if (path.startsWith('/teach') || path.startsWith('/instructor') || path.startsWith('/admin')) {
-      return 'teach';
-    }
-    if (path.startsWith('/app')) {
-      return 'app';
-    }
-    return 'experience';
-  });
+  const [route, setRoute] = useState(routeFromPath)
+  const [session, setSession] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const onPop = () => {
-      const path = window.location.pathname;
-      if (path.startsWith('/teach') || path.startsWith('/instructor') || path.startsWith('/admin')) {
-        setRoute('teach');
-      } else if (path.startsWith('/app')) {
-        setRoute('app');
-      } else {
-        setRoute('experience');
-      }
-    };
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, []);
+    let mounted = true
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return
+      setSession(data.session ?? null)
+      setLoading(false)
+      if (route === 'callback' && data.session) navigate('app')
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!mounted) return
+      setSession(nextSession ?? null)
+      if (nextSession && ['login', 'signup', 'callback'].includes(route)) navigate('app')
+    })
+
+    const onPop = () => setRoute(routeFromPath())
+    window.addEventListener('popstate', onPop)
+    return () => {
+      mounted = false
+      listener.subscription.unsubscribe()
+      window.removeEventListener('popstate', onPop)
+    }
+  }, [])
 
   const navigate = (to) => {
-    setRoute(to);
-    const targetPath = to === 'teach' ? '/teach' : to === 'app' ? '/app' : '/';
-    window.history.pushState({}, '', targetPath);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+    setRoute(to)
+    const targetPath = ({
+      teach: '/teach', app: '/app', login: '/login', signup: '/signup', forgot: '/forgot-password', reset: '/reset-password',
+    })[to] ?? '/'
+    window.history.pushState({}, '', targetPath)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    navigate('experience')
+  }
+
+  if (loading) return <div className="sahan-auth-loading">Loading Sahan…</div>
+
+  if (route === 'callback') return session ? null : <Auth mode="login" onAuthenticated={() => navigate('app')} />
+  if (route === 'reset') return <Auth mode="reset" onAuthenticated={() => navigate('app')} />
+  if (route === 'login') return <Auth mode="login" onAuthenticated={() => navigate('app')} />
+  if (route === 'signup') return <Auth mode="signup" onAuthenticated={() => navigate('app')} />
+  if (route === 'forgot') return <Auth mode="forgot" onAuthenticated={() => navigate('app')} />
+
+  if (route === 'app' && !session) return <Auth mode="login" onAuthenticated={() => navigate('app')} />
 
   return (
     <>
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '16px',
-          right: '16px',
-          zIndex: 9999,
-          display: 'flex',
-          gap: '6px',
-          background: 'rgba(23, 23, 27, 0.92)',
-          padding: '6px',
-          borderRadius: '999px',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.15)',
-        }}
-      >
-        <button
-          onClick={() => navigate('experience')}
-          style={{
-            background: route === 'experience' ? '#ffffff' : 'transparent',
-            color: route === 'experience' ? '#111111' : '#d1d5db',
-            border: 0,
-            borderRadius: '999px',
-            padding: '6px 14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          Landing & Discovery
-        </button>
-        <button
-          onClick={() => navigate('app')}
-          style={{
-            background: route === 'app' ? '#ffffff' : 'transparent',
-            color: route === 'app' ? '#111111' : '#d1d5db',
-            border: 0,
-            borderRadius: '999px',
-            padding: '6px 14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          Learner Dashboard
-        </button>
-        <button
-          onClick={() => navigate('teach')}
-          style={{
-            background: route === 'teach' ? '#7c5cff' : 'transparent',
-            color: '#ffffff',
-            border: 0,
-            borderRadius: '999px',
-            padding: '6px 14px',
-            fontSize: '11px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          Teach & Admin Portal
-        </button>
-      </div>
-
       {route === 'teach' && <TeachApp onNavigateHome={() => navigate('experience')} />}
-      {route === 'app' && <LegacyApp onNavigateTeach={() => navigate('teach')} />}
-      {route === 'experience' && <SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} />}
+      {route === 'app' && <LegacyApp session={session} onSignOut={signOut} onNavigateTeach={() => navigate('teach')} />}
+      {route === 'experience' && <SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} onNavigateLogin={() => navigate('login')} />}
     </>
-  );
+  )
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Root />
-  </React.StrictMode>,
+  <React.StrictMode><Root /></React.StrictMode>,
 )
