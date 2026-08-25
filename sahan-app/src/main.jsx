@@ -39,7 +39,6 @@ function Root() {
       setLoading(false)
       if (route === 'callback' && data.session) navigate('app')
     })
-
     const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       if (!mounted) return
       setSession(nextSession ?? null)
@@ -51,7 +50,6 @@ function Root() {
   }, [])
 
   const signOut = async () => { await supabase.auth.signOut(); navigate('experience') }
-
   if (loading) return <div className="sahan-auth-loading">Loading Sahan…</div>
   if (route === 'callback') return session ? null : <Auth mode="login" onAuthenticated={() => navigate('app')} />
   if (route === 'reset') return <Auth mode="reset" onAuthenticated={() => navigate('app')} />
@@ -63,7 +61,7 @@ function Root() {
   return <>
     {route === 'teach' && <TeachApp onNavigateHome={() => navigate('experience')} />}
     {route === 'app' && <LearnerDashboard session={session} onSignOut={signOut} onNavigateTeach={() => navigate('teach')} />}
-    {route === 'experience' && <SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} onNavigateLogin={() => navigate('login')} />}
+    {route === 'experience' && <div className="sahan-public-root"><SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} /><div className="sahan-public-auth"><button onClick={() => navigate('login')}>Sign in</button><button onClick={() => navigate('signup')}>Create account</button></div></div>}
   </>
 }
 
