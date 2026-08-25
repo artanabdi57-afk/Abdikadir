@@ -1,0 +1,8 @@
+{
+  "name": "Sahan",
+  "description": "The minimalist platform for live learning, teaching, and course certification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
