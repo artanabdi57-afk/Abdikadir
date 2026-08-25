@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+// Sahan is intentionally locked to its own Supabase project.
+// The publishable key is safe for browser use; environment variables remain preferred.
+const SAHAN_URL = 'https://dwmwdhybmpfjqvkbgqsj.supabase.co'
+const SAHAN_PUBLISHABLE_KEY = 'sb_publishable_ne4m2N6HRJU9OZd6JJEnjA_gk78plxG'
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Sahan Supabase environment is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.')
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || SAHAN_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || SAHAN_PUBLISHABLE_KEY
 
-if (!supabaseUrl.includes('dwmwdhybmpfjqvkbgqsj.supabase.co')) {
+if (supabaseUrl !== SAHAN_URL) {
   throw new Error('Sahan is configured with the wrong Supabase project. Refusing to start.')
 }
 
