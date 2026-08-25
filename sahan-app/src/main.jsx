@@ -61,7 +61,7 @@ function Root() {
   return <>
     {route === 'teach' && <TeachApp onNavigateHome={() => navigate('experience')} />}
     {route === 'app' && <LearnerDashboard session={session} onSignOut={signOut} onNavigateTeach={() => navigate('teach')} />}
-    {route === 'experience' && <div className="sahan-public-root"><SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} /><div className="sahan-public-auth"><button onClick={() => navigate('login')}>Sign in</button><button onClick={() => navigate('signup')}>Create account</button></div></div>}
+    {route === 'experience' && <div className="sahan-public-root"><SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} /><div style={{position:'fixed',top:18,right:22,zIndex:100,display:'flex',gap:8,padding:6,borderRadius:12,background:'rgba(255,255,255,.94)',border:'1px solid #e4e0d8',boxShadow:'0 10px 30px rgba(20,18,12,.08)',backdropFilter:'blur(10px)'}}><button style={{border:0,background:'transparent',padding:'8px 10px',fontWeight:700,cursor:'pointer'}} onClick={() => navigate('login')}>Sign in</button><button style={{border:0,background:'#171714',color:'#fff',borderRadius:8,padding:'8px 12px',fontWeight:800,cursor:'pointer'}} onClick={() => navigate('signup')}>Create account</button></div></div>}
   </>
 }
 
