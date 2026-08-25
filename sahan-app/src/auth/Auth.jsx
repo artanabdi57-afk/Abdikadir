@@ -7,8 +7,34 @@ const friendlyError = (error) => {
   if (/invalid login credentials/i.test(message)) return 'Email or password is incorrect.'
   if (/email not confirmed/i.test(message)) return 'Please verify your email before signing in.'
   if (/password.*(6|characters)/i.test(message)) return 'Your password must be at least 6 characters.'
-  if (/user already registered/i.test(message)) return 'An account with this email already exists. Try signing in.'
+  if (/user already registered|already registered/i.test(message)) return 'An account with this email already exists. Try signing in.'
+  if (/expired|session.*expired|refresh token/i.test(message)) return 'Your session has expired. Please sign in again.'
   return message
+}
+
+async function ensureProfile(user) {
+  if (!user?.id) return null
+  const { data: existing, error: readError } = await supabase
+    .from('sahan_profiles')
+    .select('id,display_name,username,avatar_url,bio,role')
+    .eq('id', user.id)
+    .maybeSingle()
+  if (readError) throw readError
+  if (existing) return existing
+
+  const displayName = user.user_metadata?.full_name?.trim() || user.email?.split('@')[0] || 'Learner'
+  const { data, error } = await supabase
+    .from('sahan_profiles')
+    .insert({ id: user.id, display_name: displayName, role: 'learner' })
+    .select('id,display_name,username,avatar_url,bio,role')
+    .single()
+  if (error && !/duplicate key/i.test(error.message)) throw error
+  if (error) {
+    const { data: retry, error: retryError } = await supabase.from('sahan_profiles').select('id,display_name,username,avatar_url,bio,role').eq('id', user.id).single()
+    if (retryError) throw retryError
+    return retry
+  }
+  return data
 }
 
 export default function Auth({ mode = 'login', onAuthenticated }) {
@@ -46,7 +72,8 @@ export default function Auth({ mode = 'login', onAuthenticated }) {
           },
         })
         if (authError) throw authError
-        if (data.session && data.user?.email_confirmed_at) {
+        if (data.user?.email_confirmed_at && data.session) {
+          await ensureProfile(data.user)
           onAuthenticated?.(data.session)
         } else {
           setMessage('Account created. Check your email and click the verification link before signing in.')
@@ -62,6 +89,7 @@ export default function Auth({ mode = 'login', onAuthenticated }) {
           await supabase.auth.signOut()
           throw new Error('Please verify your email before signing in.')
         }
+        await ensureProfile(data.user)
         onAuthenticated?.(data.session)
       } else if (view === 'forgot') {
         const { error: authError } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
@@ -77,6 +105,7 @@ export default function Auth({ mode = 'login', onAuthenticated }) {
         setMessage('Password updated successfully. You can now sign in.')
         setPassword('')
         setConfirm('')
+        await supabase.auth.signOut()
         setView('login')
       }
     } catch (err) {
