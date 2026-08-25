@@ -1,8 +1,9 @@
 {
-  "installCommand": "npm --prefix sahan-app install",
-  "buildCommand": "npm --prefix sahan-app run build",
+  "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": "sahan-app/dist",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
