@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import SahanExperience from './sahan/SahanExperience.jsx'
-import LegacyApp from './App.jsx'
+import LearnerDashboard from './learner/LearnerDashboard.jsx'
 import TeachApp from './teach/TeachApp.jsx'
 import Auth from './auth/Auth.jsx'
 import { supabase } from './lib/supabase.js'
@@ -24,6 +24,13 @@ function Root() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const navigate = (to) => {
+    setRoute(to)
+    const targetPath = ({ teach: '/teach', app: '/app', login: '/login', signup: '/signup', forgot: '/forgot-password', reset: '/reset-password' })[to] ?? '/'
+    window.history.pushState({}, '', targetPath)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   useEffect(() => {
     let mounted = true
     supabase.auth.getSession().then(({ data }) => {
@@ -38,49 +45,26 @@ function Root() {
       setSession(nextSession ?? null)
       if (nextSession && ['login', 'signup', 'callback'].includes(route)) navigate('app')
     })
-
     const onPop = () => setRoute(routeFromPath())
     window.addEventListener('popstate', onPop)
-    return () => {
-      mounted = false
-      listener.subscription.unsubscribe()
-      window.removeEventListener('popstate', onPop)
-    }
+    return () => { mounted = false; listener.subscription.unsubscribe(); window.removeEventListener('popstate', onPop) }
   }, [])
 
-  const navigate = (to) => {
-    setRoute(to)
-    const targetPath = ({
-      teach: '/teach', app: '/app', login: '/login', signup: '/signup', forgot: '/forgot-password', reset: '/reset-password',
-    })[to] ?? '/'
-    window.history.pushState({}, '', targetPath)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const signOut = async () => {
-    await supabase.auth.signOut()
-    navigate('experience')
-  }
+  const signOut = async () => { await supabase.auth.signOut(); navigate('experience') }
 
   if (loading) return <div className="sahan-auth-loading">Loading Sahan…</div>
-
   if (route === 'callback') return session ? null : <Auth mode="login" onAuthenticated={() => navigate('app')} />
   if (route === 'reset') return <Auth mode="reset" onAuthenticated={() => navigate('app')} />
   if (route === 'login') return <Auth mode="login" onAuthenticated={() => navigate('app')} />
   if (route === 'signup') return <Auth mode="signup" onAuthenticated={() => navigate('app')} />
   if (route === 'forgot') return <Auth mode="forgot" onAuthenticated={() => navigate('app')} />
-
   if (route === 'app' && !session) return <Auth mode="login" onAuthenticated={() => navigate('app')} />
 
-  return (
-    <>
-      {route === 'teach' && <TeachApp onNavigateHome={() => navigate('experience')} />}
-      {route === 'app' && <LegacyApp session={session} onSignOut={signOut} onNavigateTeach={() => navigate('teach')} />}
-      {route === 'experience' && <SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} onNavigateLogin={() => navigate('login')} />}
-    </>
-  )
+  return <>
+    {route === 'teach' && <TeachApp onNavigateHome={() => navigate('experience')} />}
+    {route === 'app' && <LearnerDashboard session={session} onSignOut={signOut} onNavigateTeach={() => navigate('teach')} />}
+    {route === 'experience' && <SahanExperience onNavigateTeach={() => navigate('teach')} onNavigateApp={() => navigate('app')} onNavigateLogin={() => navigate('login')} />}
+  </>
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode><Root /></React.StrictMode>,
-)
+ReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><Root /></React.StrictMode>)
