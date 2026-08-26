@@ -121,17 +121,6 @@ app.post('/api/auth/login', async (req, res) => {
   const password = req.body?.password;
   if (!email || !password) return bad(res, 'Email and password are required.');
 
-  // Immediate support for demo logins
-  if (email === 'admin@sahan.com' || (email.includes('admin') && password === 'demo123')) {
-    const role = { role: 'admin', admin_id: 'admin_1', name: 'Admin Sahan', email: 'admin@sahan.com' };
-    const token = signToken({ sub: 'admin_1', ...role });
-    return res.json({ token, user: role });
-  }
-  if (email === 'mariam@sahan.com' || password === 'demo123') {
-    const role = { role: 'instructor', instructor_id: 'inst_1', id: 'inst_1', name: 'Mariam Hassan', email: 'mariam@sahan.com' };
-    const token = signToken({ sub: 'inst_1', ...role });
-    return res.json({ token, user: role });
-  }
 
   try {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
