@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams, Link, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import SahanExperience from './sahan/SahanExperience.jsx'
 import SahanApp from './App.jsx'
 import LearnerDashboardPayments from './learner/LearnerDashboardPayments.jsx'
@@ -10,150 +10,8 @@ import { supabase } from './lib/supabase.js'
 import { LanguageProvider } from './i18n/LanguageContext.jsx'
 import './styles/index.css'
 
-function ViewNavigator() {
-  const location = useLocation()
-  const [minimized, setMinimized] = useState(false)
-  const currentPath = location.pathname
-
-  if (minimized) {
-    return (
-      <button
-        onClick={() => setMinimized(false)}
-        style={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 9999,
-          background: '#18181b',
-          color: '#ffffff',
-          border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: 30,
-          padding: '8px 16px',
-          fontSize: 13,
-          fontWeight: 700,
-          cursor: 'pointer',
-          boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}
-      >
-        <span>ðŸŽ¨ Sahan Views</span>
-        <span style={{ fontSize: 11, background: '#3f3f46', padding: '2px 6px', borderRadius: 10 }}>Expand</span>
-      </button>
-    )
-  }
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: 20,
-        right: 20,
-        zIndex: 9999,
-        background: 'rgba(24, 24, 27, 0.96)',
-        color: '#f4f4f5',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
-        borderRadius: 16,
-        padding: '10px 14px',
-        boxShadow: '0 16px 40px rgba(0, 0, 0, 0.35)',
-        backdropFilter: 'blur(16px)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        fontFamily: 'Inter, system-ui, sans-serif',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginRight: 4 }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e' }} />
-        <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.04em', color: '#a1a1aa', textTransform: 'uppercase' }}>Views</span>
-      </div>
-
-      <div style={{ display: 'flex', background: 'rgba(255,255,255,0.08)', borderRadius: 10, padding: 3, gap: 2 }}>
-        <Link
-          to="/"
-          style={{
-            padding: '6px 12px',
-            borderRadius: 7,
-            fontSize: 12,
-            fontWeight: 700,
-            color: currentPath === '/' ? '#ffffff' : '#a1a1aa',
-            background: currentPath === '/' ? '#3b82f6' : 'transparent',
-            textDecoration: 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          ðŸŽ“ Student App
-        </Link>
-        <Link
-          to="/experience"
-          style={{
-            padding: '6px 12px',
-            borderRadius: 7,
-            fontSize: 12,
-            fontWeight: 700,
-            color: currentPath === '/experience' ? '#ffffff' : '#a1a1aa',
-            background: currentPath === '/experience' ? '#3b82f6' : 'transparent',
-            textDecoration: 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          âœ¨ Landing & Survey
-        </Link>
-        <Link
-          to="/teach"
-          style={{
-            padding: '6px 12px',
-            borderRadius: 7,
-            fontSize: 12,
-            fontWeight: 700,
-            color: currentPath.startsWith('/teach') ? '#ffffff' : '#a1a1aa',
-            background: currentPath.startsWith('/teach') ? '#3b82f6' : 'transparent',
-            textDecoration: 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          ðŸ‘¨â€ðŸ« Teach Portal
-        </Link>
-        <Link
-          to="/payments"
-          style={{
-            padding: '6px 12px',
-            borderRadius: 7,
-            fontSize: 12,
-            fontWeight: 700,
-            color: currentPath === '/payments' ? '#ffffff' : '#a1a1aa',
-            background: currentPath === '/payments' ? '#3b82f6' : 'transparent',
-            textDecoration: 'none',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          ðŸ’³ Live Payments
-        </Link>
-      </div>
-
-      <button
-        onClick={() => setMinimized(true)}
-        title="Minimize"
-        style={{
-          border: 0,
-          background: 'transparent',
-          color: '#71717a',
-          cursor: 'pointer',
-          padding: '4px 6px',
-          fontSize: 14,
-          lineHeight: 1,
-          borderRadius: 6,
-        }}
-      >
-        âœ•
-      </button>
-    </div>
-  )
-}
-
 function Loading() {
-  return <div className="sahan-auth-loading">Loading Sahanâ€¦</div>
+  return <div className="sahan-auth-loading">Loading Sahan…</div>
 }
 
 function NotFound() {
@@ -163,7 +21,7 @@ function NotFound() {
         <div className="learner-kicker">404</div>
         <h1>Page not found</h1>
         <p>The page you're looking for doesn't exist or has moved.</p>
-        <a href="/" style={{ fontWeight: 800 }}>Return to Sahan â†’</a>
+        <a href="/" style={{ fontWeight: 800 }}>Return to Sahan →</a>
       </div>
     </div>
   )
@@ -179,7 +37,7 @@ function ResourceRoute({ kind }) {
   const value = params.slug || params.username || ''
   return (
     <div style={{ minHeight: '100vh', padding: 40 }}>
-      <a href="/">â† Return to Sahan</a>
+      <a href="/">← Return to Sahan</a>
       <div style={{ maxWidth: 900, margin: '80px auto' }}>
         <div className="learner-kicker">{kind.toUpperCase()}</div>
         <h1>{kind === 'community' ? 'Sahan Community' : kind === 'creator' ? 'Creator profile' : 'Course Details'}</h1>
@@ -299,7 +157,6 @@ function AppRoutes({ session, loading }) {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <ViewNavigator />
     </>
   )
 }
