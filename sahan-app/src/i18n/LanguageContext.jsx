@@ -10,9 +10,9 @@ const LanguageContext = createContext({
 });
 
 export const AVAILABLE_LANGUAGES = [
-  { code: 'en', label: 'English', nativeLabel: 'English', flag: 'ðŸ‡¬ðŸ‡§', dir: 'ltr' },
-  { code: 'so', label: 'Somali', nativeLabel: 'Af-Soomaali', flag: 'ðŸ‡¸ðŸ‡´', dir: 'ltr' },
-  { code: 'ar', label: 'Arabic', nativeLabel: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©', flag: 'ðŸ‡¸ðŸ‡¦', dir: 'rtl' },
+  { code: 'en', label: 'English', nativeLabel: 'English', flag: '🇬🇧', dir: 'ltr' },
+  { code: 'so', label: 'Somali', nativeLabel: 'Af-Soomaali', flag: '🇸🇴', dir: 'ltr' },
+  { code: 'ar', label: 'Arabic', nativeLabel: 'العربية', flag: '🇸🇦', dir: 'rtl' },
 ];
 
 export function LanguageProvider({ children }) {
