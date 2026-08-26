@@ -138,7 +138,7 @@ export default function LanguageSwitcher({ variant = 'default', className = '' }
                 <span>{item.nativeLabel}</span>
               </div>
               {lang === item.code && (
-                <span style={{ color: '#ff6b00', fontSize: '12px' }}>âœ“</span>
+                <span style={{ color: '#ff6b00', fontSize: '12px' }}>✓</span>
               )}
             </button>
           ))}
