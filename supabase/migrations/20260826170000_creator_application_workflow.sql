@@ -1,4 +1,4 @@
-create table if not exists public.creator_applications (
+create table if not exists public.sahan_creator_applications (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   email text not null unique,
@@ -11,6 +11,6 @@ create table if not exists public.creator_applications (
   created_at timestamptz not null default now()
 );
 
-create index if not exists idx_creator_applications_status on public.creator_applications(status, created_at desc);
+create index if not exists idx_sahan_creator_applications_status on public.sahan_creator_applications(status, created_at desc);
 
-alter table public.creator_applications enable row level security;
+alter table public.sahan_creator_applications enable row level security;
