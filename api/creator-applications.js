@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dwmwdhybmpfjqvkbgqsj.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_ne4m2N6HRJU9OZd6JJEnjA_gk78plxG';
 
 export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
@@ -15,13 +15,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed.' });
   }
 
-  if (!SUPABASE_SERVICE_ROLE_KEY) {
-    return res.status(500).json({ message: 'Creator applications are not configured yet. Missing SUPABASE_SERVICE_ROLE_KEY on the server.' });
-  }
-
   const { name, email, teaching_topic, bio } = req.body || {};
-  const normalizedEmail = String(email || '').trim().toLowerCase();
   const cleanName = String(name || '').trim();
+  const normalizedEmail = String(email || '').trim().toLowerCase();
   const cleanTopic = String(teaching_topic || '').trim();
   const cleanBio = String(bio || '').trim();
 
@@ -29,70 +25,28 @@ export default async function handler(req, res) {
     return res.status(400).json({ message: 'Enter your full name, your Sahan account email, and what you want to teach.' });
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-
   try {
-    // The application must belong to an existing Sahan learner account.
-    const { data: usersPage, error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    if (usersError) {
-      return res.status(503).json({ message: 'Unable to verify your Sahan account.' });
-    }
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
 
-    const account = (usersPage?.users || []).find(
-      user => String(user.email || '').trim().toLowerCase() === normalizedEmail
-    );
-
-    if (!account) {
-      return res.status(404).json({ message: 'Create your Sahan learner account first, then apply using the same email.' });
-    }
-
-    if (!account.email_confirmed_at) {
-      return res.status(403).json({ message: 'Please verify your Sahan account email before applying.' });
-    }
-
-    const { data: existing, error: existingError } = await supabase
-      .from('sahan_creator_applications')
-      .select('id,status,user_id')
-      .or(`user_id.eq.${account.id},email.eq.${normalizedEmail}`)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (existingError) {
-      return res.status(503).json({ message: 'Unable to check your application.' });
-    }
-    if (existing?.status === 'pending') {
-      return res.status(409).json({ message: 'Your creator application is already pending admin review.' });
-    }
-    if (existing?.status === 'approved') {
-      return res.status(409).json({ message: 'This Sahan account is already approved as a creator.' });
-    }
-
-    const payload = {
-      user_id: account.id,
-      full_name: cleanName,
-      email: normalizedEmail,
-      expertise: cleanTopic,
-      experience: cleanBio || null,
-      status: 'pending',
-      reviewed_by: null,
-      reviewed_at: null,
-      rejection_reason: null,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error } = existing
-      ? await supabase.from('sahan_creator_applications').update(payload).eq('id', existing.id)
-      : await supabase.from('sahan_creator_applications').insert(payload);
+    const { data, error } = await supabase.rpc('submit_creator_application', {
+      p_name: cleanName,
+      p_email: normalizedEmail,
+      p_teaching_topic: cleanTopic,
+      p_bio: cleanBio || null,
+    });
 
     if (error) {
-      console.error('creator application persistence failed', error);
-      return res.status(503).json({ message: 'Unable to submit your creator application.' });
+      console.error('creator application RPC failed', error);
+      const message = error.message || 'Unable to submit your creator application.';
+      const status = message.includes('already pending') || message.includes('already approved') ? 409 : message.includes('Create your Sahan') ? 404 : message.includes('verify') ? 403 : 503;
+      return res.status(status).json({ message });
     }
 
-    return res.status(201).json({
+    return res.status(201).json(data || {
+      success: true,
+      status: 'pending',
       message: 'Application submitted successfully. Your request is now waiting for admin approval.'
     });
   } catch (error) {
