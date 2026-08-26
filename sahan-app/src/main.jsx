@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import SahanExperience from './sahan/SahanExperience.jsx'
-import LearnerDashboard from './learner/LearnerDashboardPayments.jsx'
+import LearnerDashboard from './learner/LearnerDashboardJS.jsx'
 import TeachApp from './teach/TeachApp.jsx'
 import Auth from './auth/Auth.jsx'
 import { supabase } from './lib/supabase.js'
@@ -34,17 +34,14 @@ function AppRoutes({session,loading}){
   <Route path="/forgot-password" element={<AuthPage mode="forgot"/>}/>
   <Route path="/reset-password" element={<AuthPage mode="reset"/>}/>
   <Route path="/auth/callback" element={session?<Navigate to="/app" replace/>:<AuthPage mode="login"/>}/>
-
   <Route path="/courses/:slug" element={<ResourceRoute kind="course"/>}/>
   <Route path="/creator/:username" element={<ResourceRoute kind="creator"/>}/>
   <Route path="/community/:slug" element={<ResourceRoute kind="community"/>}/>
   <Route path="/community" element={<ResourceRoute kind="community"/>}/>
-
   <Route path="/app/*" element={<ProtectedLearner session={session}/>} />
   <Route path="/teach/*" element={<TeachRoute session={session}/>} />
   <Route path="/instructor/*" element={<TeachRoute session={session}/>} />
   <Route path="/admin/*" element={<AdminRoute session={session}/>} />
-
   <Route path="/payment/success" element={<ProtectedLearner session={session}/>} />
   <Route path="/payment/failed" element={<ProtectedLearner session={session}/>} />
   <Route path="*" element={<NotFound/>}/>
