@@ -5,7 +5,7 @@ const catalog=[['Excel & Power BI for Real Work','Excel & Data','Beginner','$29'
 export default function SahanExperience({onNavigateTeach,onNavigateApp}){
  const [view,setView]=useState('landing')
  return <div className="sx"><style>{css}</style>
-  <header className="sx-nav"><button className="sx-brand" onClick={()=>setView('landing')}><span>S</span>Sahan</button><nav className="sx-links"><button onClick={()=>setView('landing')}>Home</button><button onClick={()=>setView('courses')}>Courses</button><button onClick={()=>setView('about')}>How it works</button></nav><div className="sx-actions"><button className="sx-ghost" onClick={onNavigateTeach}>Instructor login</button><button className="sx-dark" onClick={onNavigateApp}>Open App</button></div></header>
+  <header className="sx-nav"><button className="sx-brand" onClick={()=>setView('landing')}><span>S</span>Sahan</button><nav className="sx-links"><button onClick={()=>setView('landing')}>Home</button><button onClick={()=>setView('courses')}>Courses</button><button onClick={()=>setView('about')}>How it works</button></nav><div className="sx-actions"><button className="sx-ghost" onClick={onNavigateTeach}>Instructor login</button><button className="sx-dark" onClick={onNavigateApp}>Log in</button></div></header>
   {view==='landing'&&<Landing onStart={()=>setView('survey')} onCreator={onNavigateTeach}/>} {view==='courses'&&<Courses/>} {view==='about'&&<About onStart={()=>setView('survey')}/>} {view==='survey'&&<Survey onDone={()=>setView('courses')}/>} 
  </div>
 }
