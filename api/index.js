@@ -174,6 +174,29 @@ app.post('/api/auth/exchange', requireSupabaseUser, async (req, res) => {
   }
 });
 
+app.post('/api/creator-applications', async (req, res) => {
+  const { name, email, teaching_topic, bio } = req.body || {};
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  if (!name?.trim() || !normalizedEmail || !teaching_topic?.trim()) {
+    return bad(res, 'Name, email and what you teach are required.');
+  }
+  const { data: existing, error: existingError } = await supabase
+    .from('creator_applications')
+    .select('id,status')
+    .eq('email', normalizedEmail)
+    .maybeSingle();
+  if (existingError) return bad(res, 'Unable to check your application.', 503);
+  if (existing?.status === 'pending') return bad(res, 'An application for this email is already being reviewed.', 409);
+  if (existing?.status === 'approved') return bad(res, 'This email already has an approved creator account.', 409);
+
+  const payload = { name: String(name).trim(), email: normalizedEmail, teaching_topic: String(teaching_topic).trim(), bio: String(bio || '').trim(), status: 'pending', admin_notes: null, reviewed_at: null, reviewed_by_admin_id: null };
+  const { error } = existing
+    ? await supabase.from('creator_applications').update(payload).eq('id', existing.id)
+    : await supabase.from('creator_applications').insert(payload);
+  if (error) return bad(res, 'Unable to submit your creator application.', 503);
+  return res.status(201).json({ message: 'Application submitted. The Sahan team will review it before you can publish courses.' });
+});
+
 app.get('/api/public/courses', async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
   const { data, error } = await supabase.rpc('get_course_rankings');
@@ -356,6 +379,68 @@ app.post('/api/admin/rank-overrides', auth, adminOnly, async (req, res) => {
   const { data, error } = await supabase.from('rank_overrides').upsert({ course_id, manual_score: Number(manual_score), set_by_admin_id: req.user.admin_id, updated_at: new Date().toISOString() }, { onConflict: 'course_id' }).select('*').single();
   if (error) return bad(res, 'Unable to save rank override.', 503);
   return res.json({ override: data });
+});
+
+app.get('/api/admin/creator-applications', auth, adminOnly, async (req, res) => {
+  const status = ['pending', 'approved', 'rejected'].includes(req.query.status) ? req.query.status : 'pending';
+  const { data, error } = await supabase
+    .from('creator_applications')
+    .select('*')
+    .eq('status', status)
+    .order('created_at', { ascending: false });
+  if (error) return bad(res, 'Unable to load creator applications.', 503);
+  return res.json({ applications: data || [] });
+});
+
+app.post('/api/admin/creator-applications/:id/approve', auth, adminOnly, async (req, res) => {
+  const { data: application, error } = await supabase
+    .from('creator_applications')
+    .select('*')
+    .eq('id', req.params.id)
+    .eq('status', 'pending')
+    .maybeSingle();
+  if (error) return bad(res, 'Unable to load creator application.', 503);
+  if (!application) return bad(res, 'Pending creator application not found.', 404);
+
+  const { data: users, error: usersError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  if (usersError) return bad(res, 'Unable to find the applicant account.', 502);
+  const authUser = (users?.users || []).find((item) => item.email?.toLowerCase() === application.email);
+  if (!authUser) return bad(res, 'The applicant must first create a learner account with this email.', 422);
+
+  const { data: existingInstructor } = await supabase.from('instructors').select('id,status').eq('email', application.email).maybeSingle();
+  let instructor;
+  if (existingInstructor) {
+    const { data, error: updateError } = await supabase.from('instructors')
+      .update({ auth_user_id: authUser.id, name: application.name, bio: application.bio || '', status: 'active' })
+      .eq('id', existingInstructor.id)
+      .select('*')
+      .single();
+    if (updateError) return bad(res, 'Unable to activate the creator account.', 503);
+    instructor = data;
+  } else {
+    const { data, error: insertError } = await supabase.from('instructors')
+      .insert({ auth_user_id: authUser.id, email: application.email, name: application.name, bio: application.bio || '', status: 'active', created_by_admin_id: req.user.admin_id })
+      .select('*')
+      .single();
+    if (insertError) return bad(res, 'Unable to activate the creator account.', 503);
+    instructor = data;
+  }
+
+  await supabase.from('creator_applications').update({ status: 'approved', admin_notes: String(req.body?.admin_notes || '').trim() || null, reviewed_by_admin_id: req.user.admin_id, reviewed_at: new Date().toISOString() }).eq('id', application.id);
+  return res.json({ instructor });
+});
+
+app.post('/api/admin/creator-applications/:id/reject', auth, adminOnly, async (req, res) => {
+  const notes = String(req.body?.admin_notes || '').trim() || 'Not approved at this time.';
+  const { data, error } = await supabase.from('creator_applications')
+    .update({ status: 'rejected', admin_notes: notes, reviewed_by_admin_id: req.user.admin_id, reviewed_at: new Date().toISOString() })
+    .eq('id', req.params.id)
+    .eq('status', 'pending')
+    .select('*')
+    .maybeSingle();
+  if (error) return bad(res, 'Unable to reject creator application.', 503);
+  if (!data) return bad(res, 'Pending creator application not found.', 404);
+  return res.json({ application: data });
 });
 
 app.get('/api/admin/instructors', auth, adminOnly, async (_req, res) => {
