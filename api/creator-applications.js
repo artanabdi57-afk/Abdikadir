@@ -1,3 +1,4 @@
+// UNUSED as of the Supabase creator-application fix; superseded by the direct Supabase insert in CreatorApplicationPage.
 import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://dwmwdhybmpfjqvkbgqsj.supabase.co';
@@ -29,28 +30,13 @@ export default async function handler(req, res) {
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
-
     const { data, error } = await supabase.rpc('submit_creator_application', {
-      p_name: cleanName,
-      p_email: normalizedEmail,
-      p_teaching_topic: cleanTopic,
-      p_bio: cleanBio || null,
+      p_name: cleanName, p_email: normalizedEmail, p_teaching_topic: cleanTopic, p_bio: cleanBio || null,
     });
-
-    if (error) {
-      console.error('creator application RPC failed', error);
-      const message = error.message || 'Unable to submit your creator application.';
-      const status = message.includes('already pending') || message.includes('already approved') ? 409 : message.includes('Create your Sahan') ? 404 : message.includes('verify') ? 403 : 503;
-      return res.status(status).json({ message });
-    }
-
-    return res.status(201).json(data || {
-      success: true,
-      status: 'pending',
-      message: 'Application submitted successfully. Your request is now waiting for admin approval.'
-    });
+    if (error) return res.status(503).json({ message: error.message || 'Unable to submit your creator application.' });
+    return res.status(201).json(data || { success: true, status: 'pending', message: 'Application submitted successfully.' });
   } catch (error) {
-    console.error('creator application error', error);
+    console.error('legacy creator application error', error);
     return res.status(503).json({ message: 'Unable to submit your creator application.' });
   }
 }
