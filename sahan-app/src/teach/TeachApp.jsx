@@ -101,7 +101,7 @@ function AuthCallback({ onLogin }) {
           </div>
         </div>
         <div className="eyebrow">SECURE SIGN-IN</div>
-        <h1>Finishing sign-inâ€¦</h1>
+        <h1>Finishing sign-in…</h1>
         <p className="muted">We are verifying your approved Sahan teaching account.</p>
         {error && (
           <>
@@ -200,17 +200,17 @@ function Login({ onLogin, onNavigateHome }) {
             Password
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" required />
           </label>
-          <button className="primary wide" disabled={busy}>{busy ? 'Signing inâ€¦' : 'Sign in'}</button>
+          <button className="primary wide" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
         </form>
 
         <div className="or"><span />or<span /></div>
         <button className="secondary wide" onClick={sendMagic} disabled={busy || !email}>
-          {busy ? 'Sendingâ€¦' : 'Email me a magic link'}
+          {busy ? 'Sending…' : 'Email me a magic link'}
         </button>
         
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <button className="header-link" style={{ fontSize: '12px', color: '#7c5cff' }} onClick={onNavigateHome}>
-            â† Back to learner platform
+            ← Back to learner platform
           </button>
         </div>
         <p className="login-note" style={{ marginTop: '12px' }}>Instructor accounts are verified for quality. Demo logins provided above.</p>
@@ -223,14 +223,14 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navItems = admin
     ? [
-        ['/admin/surveys', 'Student leads', 'ðŸ“‹'],
-        ['/admin/promotion-queue', 'Ad Control & Promos', 'â†—'],
-        ['/admin/courses', 'Course ranking', 'â—Ž'],
-        ['/admin/instructors', 'Instructors', 'â™™'],
+        ['/admin/surveys', 'Student leads', '📋'],
+        ['/admin/promotion-queue', 'Ad Control & Promos', '↗'],
+        ['/admin/courses', 'Course ranking', '◎'],
+        ['/admin/instructors', 'Instructors', '♙'],
       ]
     : [
-        ['/dashboard', 'Dashboard', 'âŒ‚'],
-        ['/courses', 'Courses', 'â–¤'],
+        ['/dashboard', 'Dashboard', '⌂'],
+        ['/courses', 'Courses', '▤'],
         ['/payouts', 'Payouts', '$'],
       ];
 
@@ -287,7 +287,7 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
               onClick={() => setMobileMenuOpen(o => !o)}
               title="Toggle Menu"
             >
-              â˜°
+              ☰
             </button>
             <div>
               <span className="crumb">{admin ? 'ADMIN' : 'TEACH'}</span>
@@ -296,7 +296,7 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <LanguageSwitcher variant="pill" />
-            <button className="header-link" onClick={onNavigateHome}>Open learner app â†—</button>
+            <button className="header-link" onClick={onNavigateHome}>Open learner app ↗</button>
           </div>
         </header>
 
@@ -418,7 +418,7 @@ function Dashboard({ go }) {
       </div>
       <div className="grid-2">
         <section className="panel">
-          <PanelTitle title="Your courses" action={<button className="link" onClick={() => go('/courses')}>Manage â†’</button>} />
+          <PanelTitle title="Your courses" action={<button className="link" onClick={() => go('/courses')}>Manage →</button>} />
           {courses.slice(0, 4).map((c) => (
             <CourseRow key={c.id} c={c} go={go} />
           ))}
@@ -428,7 +428,7 @@ function Dashboard({ go }) {
           <span className="eyebrow">GROW YOUR REACH</span>
           <h2>Get discovered by more learners.</h2>
           <p>Request a paid visibility boost. Promotion adds a modest ranking weight only while the campaign is active.</p>
-          <button className="primary" onClick={() => go('/courses')}>Choose a course â†’</button>
+          <button className="primary" onClick={() => go('/courses')}>Choose a course →</button>
         </section>
       </div>
     </Page>
@@ -441,10 +441,10 @@ function CourseRow({ c, go }) {
       <div className="cover">{c.title.slice(0, 1)}</div>
       <div>
         <b>{c.title}</b>
-        <small>{c.status} Â· {c.category || 'General'}</small>
+        <small>{c.status} · {c.category || 'General'}</small>
       </div>
       <Badge tone={c.admin_approved ? 'green' : 'amber'}>{c.admin_approved ? 'Approved' : 'Review'}</Badge>
-      <button className="link" onClick={() => go(`/courses/${c.id}/promote`)}>Promote â†’</button>
+      <button className="link" onClick={() => go(`/courses/${c.id}/promote`)}>Promote →</button>
     </div>
   );
 }
@@ -534,7 +534,7 @@ function Courses({ go, setError }) {
           <div className="table-row" key={c.id}>
             <div>
               <b>{c.title}</b>
-              <small>{c.category || 'General'} Â· ${Number(c.price || 0).toFixed(0)}</small>
+              <small>{c.category || 'General'} · ${Number(c.price || 0).toFixed(0)}</small>
             </div>
             <Badge tone={c.admin_approved ? 'green' : 'amber'}>{c.admin_approved ? 'Approved' : 'Pending approval'}</Badge>
             <span>{Number(c.rank_score || 0).toFixed(1)}</span>
@@ -643,7 +643,7 @@ function Promote({ id, go, setError }) {
         promoted: true
       }));
 
-      setSuccessMsg(`ðŸŽ‰ Promotion active! Paid $${currentFee}.00 via ${paymentMethod === 'card' ? 'Card' : 'Mobile Money'}. Your class is now spotlighted!`);
+      setSuccessMsg(`🎉 Promotion active! Paid $${currentFee}.00 via ${paymentMethod === 'card' ? 'Card' : 'Mobile Money'}. Your class is now spotlighted!`);
       await load();
     } catch (e) {
       setError(e.message);
@@ -652,12 +652,12 @@ function Promote({ id, go, setError }) {
     }
   };
 
-  if (!course) return <Page title="Promotion" sub="Loading course detailsâ€¦" />;
+  if (!course) return <Page title="Promotion" sub="Loading course details…" />;
 
   return (
-    <Page title={`Promote â€œ${course.title}â€`} sub="Reach thousands of eager students on Sahan with guaranteed top placement.">
+    <Page title={`Promote “${course.title}”`} sub="Reach thousands of eager students on Sahan with guaranteed top placement.">
       <div style={{ marginBottom: '16px' }}>
-        <button className="link" onClick={() => go('/courses')}>â† Back to courses</button>
+        <button className="link" onClick={() => go('/courses')}>← Back to courses</button>
       </div>
 
       {successMsg && (
@@ -689,7 +689,7 @@ function Promote({ id, go, setError }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <b style={{ fontSize: '13px', color: '#111' }}>ðŸŒŸ Hero Spotlight</b>
+                    <b style={{ fontSize: '13px', color: '#111' }}>🌟 Hero Spotlight</b>
                     <span style={{ fontSize: '10px', background: '#ff6b00', color: '#fff', padding: '2px 6px', borderRadius: '999px', fontWeight: '700' }}>5x Reach</span>
                   </div>
                   <small style={{ color: '#6b7280', fontSize: '11px', lineHeight: '1.4', display: 'block' }}>
@@ -709,7 +709,7 @@ function Promote({ id, go, setError }) {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <b style={{ fontSize: '13px', color: '#111' }}>âš¡ Category #1 Pin</b>
+                    <b style={{ fontSize: '13px', color: '#111' }}>⚡ Category #1 Pin</b>
                     <span style={{ fontSize: '10px', background: '#f3f4f6', color: '#4b5563', padding: '2px 6px', borderRadius: '999px', fontWeight: '700' }}>Search #1</span>
                   </div>
                   <small style={{ color: '#6b7280', fontSize: '11px', lineHeight: '1.4', display: 'block' }}>
@@ -777,7 +777,7 @@ function Promote({ id, go, setError }) {
                   boxShadow: '0 4px 14px rgba(234, 88, 12, 0.3)'
                 }}
               >
-                {busy ? 'Activatingâ€¦' : `Pay $${currentFee} & Launch Ad â†—`}
+                {busy ? 'Activating…' : `Pay $${currentFee} & Launch Ad ↗`}
               </button>
             </div>
           </form>
@@ -810,13 +810,13 @@ function Promote({ id, go, setError }) {
                 borderRadius: '999px',
                 letterSpacing: '0.08em'
               }}>
-                ðŸŒŸ SPONSORED CLASS
+                🌟 SPONSORED CLASS
               </span>
               <span style={{ fontSize: '11px', color: '#cbd5e1' }}>By {course.instructor || 'You'}</span>
             </div>
 
             <small style={{ color: '#fb923c', fontSize: '10px', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              {course.category || 'Business'} Â· FEATURED PROMOTION
+              {course.category || 'Business'} · FEATURED PROMOTION
             </small>
             <h3 style={{ fontSize: '18px', margin: '6px 0 8px', color: '#fff', fontWeight: '700' }}>
               {course.title}
@@ -826,16 +826,16 @@ function Promote({ id, go, setError }) {
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <span style={{ fontSize: '11px', color: '#e2e8f0' }}>â˜…â˜…â˜…â˜…â˜… 4.9 Â· Featured</span>
+              <span style={{ fontSize: '11px', color: '#e2e8f0' }}>★★★★★ 4.9 · Featured</span>
               <span style={{ background: '#ff6b00', color: '#fff', padding: '6px 14px', borderRadius: '999px', fontSize: '11px', fontWeight: '700' }}>
-                Enroll now â†’
+                Enroll now →
               </span>
             </div>
           </div>
 
           <div style={{ marginTop: '20px', padding: '12px 14px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '11px', fontWeight: '700', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              âœ“ Instant Live Activation Â· Auto-renews option Â· Full Student Analytics
+              ✓ Instant Live Activation · Auto-renews option · Full Student Analytics
             </span>
           </div>
         </section>
@@ -857,8 +857,8 @@ function Promote({ id, go, setError }) {
           requests.map((r) => (
             <div className="request" key={r.id}>
               <div>
-                <b>{r.requested_duration_days} days Â· {r.requested_duration_days >= 14 ? 'Hero Spotlight' : 'Category Boost'}</b>
-                <small>{new Date(r.created_at).toLocaleString()} Â· Fee ${r.requested_budget ?? '35.00'}</small>
+                <b>{r.requested_duration_days} days · {r.requested_duration_days >= 14 ? 'Hero Spotlight' : 'Category Boost'}</b>
+                <small>{new Date(r.created_at).toLocaleString()} · Fee ${r.requested_budget ?? '35.00'}</small>
               </div>
               <Badge tone={r.status === 'approved' ? 'green' : r.status === 'rejected' ? 'red' : 'green'}>
                 {r.status === 'pending' ? 'Active' : r.status}
@@ -898,11 +898,11 @@ function Payouts({ setError }) {
         {(data.payouts || []).map((p) => (
           <div className="table-row" key={p.id}>
             <div>
-              <b>{p.period_start} â†’ {p.period_end}</b>
+              <b>{p.period_start} → {p.period_end}</b>
             </div>
             <strong>${Number(p.amount).toFixed(2)}</strong>
             <Badge tone={p.status === 'paid' ? 'green' : 'amber'}>{p.status}</Badge>
-            <span>{p.paid_at ? new Date(p.paid_at).toLocaleDateString() : 'â€”'}</span>
+            <span>{p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—'}</span>
           </div>
         ))}
         {!data.payouts?.length && <Empty text="No payout records yet." />}
@@ -980,7 +980,7 @@ function AdminQueue({ setError }) {
       instructor: instructor || 'Teacher',
       promoted: true
     }));
-    showToast(`ðŸŒŸ â€œ${courseTitle}â€ is now the LIVE Hero Spotlight across the landing page and student dashboard!`);
+    showToast(`🌟 “${courseTitle}” is now the LIVE Hero Spotlight across the landing page and student dashboard!`);
   };
 
   const act = async (item, approve) => {
@@ -1055,7 +1055,7 @@ function AdminQueue({ setError }) {
             <div className="table-row" key={c.id}>
               <div>
                 <b>{c.courseTitle}</b>
-                <small>Instructor: {c.instructor} Â· {c.category}</small>
+                <small>Instructor: {c.instructor} · {c.category}</small>
               </div>
               <div>
                 <Badge tone={c.tier.includes('Hero') ? 'green' : 'blue'}>{c.tier}</Badge>
@@ -1066,7 +1066,7 @@ function AdminQueue({ setError }) {
               </div>
               <div>
                 <span style={{ fontSize: '12px', color: '#16a34a', fontWeight: '700' }}>
-                  {c.impressions || 1200} views Â· {c.enrolledLeads || 24} leads
+                  {c.impressions || 1200} views · {c.enrolledLeads || 24} leads
                 </span>
               </div>
               <div>
@@ -1082,7 +1082,7 @@ function AdminQueue({ setError }) {
                     fontSize: '11px',
                     fontWeight: '700'
                   }}>
-                    ðŸŒŸ ACTIVE LIVE SPOTLIGHT
+                    🌟 ACTIVE LIVE SPOTLIGHT
                   </span>
                 ) : (
                   <button
@@ -1090,7 +1090,7 @@ function AdminQueue({ setError }) {
                     style={{ background: '#fff7ed', color: '#ea580c', border: '1px solid #fed7aa', fontWeight: '700' }}
                     onClick={() => setAsSpotlight(c.courseId, c.courseTitle, c.instructor)}
                   >
-                    Set as Live Spotlight â†—
+                    Set as Live Spotlight ↗
                   </button>
                 )}
               </div>
@@ -1116,7 +1116,7 @@ function AdminQueue({ setError }) {
           <div className="table-row" key={i.id}>
             <div>
               <b>{i.instructors?.name || 'Instructor'}</b>
-              <small>{i.instructors?.email || 'â€”'}</small>
+              <small>{i.instructors?.email || '—'}</small>
             </div>
             <div>
               <b>{i.sahan_courses?.title || 'Course'}</b>
@@ -1189,7 +1189,7 @@ function AdminCourses({ setError }) {
                 <b>{c.title}</b>
                 <small>{c.status}</small>
               </div>
-              <span>{c.instructors?.name || 'â€”'}</span>
+              <span>{c.instructors?.name || '—'}</span>
               <span>{Number(c.base_quality_score || 0).toFixed(1)}</span>
               <input className="score" type="number" min="-50" max="50" defaultValue={score} onBlur={(e) => save(c, e.target.value)} />
               <button
@@ -1197,7 +1197,7 @@ function AdminCourses({ setError }) {
                 style={{ cursor: 'pointer' }}
                 onClick={() => toggleApproval(c)}
               >
-                {c.admin_approved ? 'Approved âœ“' : 'Approve'}
+                {c.admin_approved ? 'Approved ✓' : 'Approve'}
               </button>
             </div>
           );
@@ -1436,7 +1436,7 @@ function AdminSurveys({ setError }) {
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flex: 1, minWidth: '280px' }}>
           <input
             type="text"
-            placeholder="Search by student name, phone or emailâ€¦"
+            placeholder="Search by student name, phone or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
@@ -1471,7 +1471,7 @@ function AdminSurveys({ setError }) {
         </div>
 
         <button className="secondary" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span>ðŸ“¥</span> Export CSV Leads
+          <span>📥</span> Export CSV Leads
         </button>
       </div>
 
@@ -1510,10 +1510,10 @@ function AdminSurveys({ setError }) {
                 </div>
                 <div>
                   <b style={{ fontSize: '13px' }}>{s.fullName || 'Anonymous Student'}</b>
-                  <small style={{ color: '#64748b' }}>{s.email || 'â€”'}</small>
+                  <small style={{ color: '#64748b' }}>{s.email || '—'}</small>
                   {s.phone && (
                     <small style={{ display: 'block', color: '#0284c7', fontWeight: 600 }}>
-                      ðŸ“ž {s.phone}
+                      📞 {s.phone}
                     </small>
                   )}
                 </div>
@@ -1590,7 +1590,7 @@ function AdminSurveys({ setError }) {
                       gap: '4px'
                     }}
                   >
-                    ðŸ’¬ WhatsApp
+                    💬 WhatsApp
                   </a>
                 ) : (
                   <button
@@ -1600,7 +1600,7 @@ function AdminSurveys({ setError }) {
                       window.location.href = `mailto:${s.email}?subject=${encodeURIComponent('Sahan Courses Recommendations')}&body=${encodeURIComponent(`Hi ${s.fullName},\n\nWe saw you selected ${(s.interests || []).join(', ')}. Let us know if you need help starting your first course!`)}`;
                     }}
                   >
-                    âœ‰ï¸ Email
+                    ✉️ Email
                   </button>
                 )}
                 <button
@@ -1651,7 +1651,7 @@ function AdminSurveys({ setError }) {
                 onClick={() => setSelectedSurvey(null)}
                 style={{ fontSize: '20px', border: 0, background: 'none', cursor: 'pointer', color: '#64748b' }}
               >
-                Ã—
+                ×
               </button>
             </div>
 
@@ -1672,7 +1672,7 @@ function AdminSurveys({ setError }) {
               </div>
               <div>
                 <h3 style={{ margin: '0 0 4px', fontSize: '18px' }}>{selectedSurvey.fullName}</h3>
-                <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{selectedSurvey.email} Â· {selectedSurvey.phone}</p>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>{selectedSurvey.email} · {selectedSurvey.phone}</p>
               </div>
             </div>
 
@@ -1729,7 +1729,7 @@ function AdminSurveys({ setError }) {
                     placeItems: 'center'
                   }}
                 >
-                  Contact via WhatsApp â†’
+                  Contact via WhatsApp →
                 </a>
               )}
             </div>
