@@ -181,7 +181,7 @@ app.post('/api/creator-applications', async (req, res) => {
     return bad(res, 'Name, email and what you teach are required.');
   }
   const { data: existing, error: existingError } = await supabase
-    .from('creator_applications')
+    .from('sahan_creator_applications')
     .select('id,status')
     .eq('email', normalizedEmail)
     .maybeSingle();
@@ -191,8 +191,8 @@ app.post('/api/creator-applications', async (req, res) => {
 
   const payload = { name: String(name).trim(), email: normalizedEmail, teaching_topic: String(teaching_topic).trim(), bio: String(bio || '').trim(), status: 'pending', admin_notes: null, reviewed_at: null, reviewed_by_admin_id: null };
   const { error } = existing
-    ? await supabase.from('creator_applications').update(payload).eq('id', existing.id)
-    : await supabase.from('creator_applications').insert(payload);
+    ? await supabase.from('sahan_creator_applications').update(payload).eq('id', existing.id)
+    : await supabase.from('sahan_creator_applications').insert(payload);
   if (error) return bad(res, 'Unable to submit your creator application.', 503);
   return res.status(201).json({ message: 'Application submitted. The Sahan team will review it before you can publish courses.' });
 });
@@ -384,7 +384,7 @@ app.post('/api/admin/rank-overrides', auth, adminOnly, async (req, res) => {
 app.get('/api/admin/creator-applications', auth, adminOnly, async (req, res) => {
   const status = ['pending', 'approved', 'rejected'].includes(req.query.status) ? req.query.status : 'pending';
   const { data, error } = await supabase
-    .from('creator_applications')
+    .from('sahan_creator_applications')
     .select('*')
     .eq('status', status)
     .order('created_at', { ascending: false });
@@ -394,7 +394,7 @@ app.get('/api/admin/creator-applications', auth, adminOnly, async (req, res) => 
 
 app.post('/api/admin/creator-applications/:id/approve', auth, adminOnly, async (req, res) => {
   const { data: application, error } = await supabase
-    .from('creator_applications')
+    .from('sahan_creator_applications')
     .select('*')
     .eq('id', req.params.id)
     .eq('status', 'pending')
@@ -426,13 +426,13 @@ app.post('/api/admin/creator-applications/:id/approve', auth, adminOnly, async (
     instructor = data;
   }
 
-  await supabase.from('creator_applications').update({ status: 'approved', admin_notes: String(req.body?.admin_notes || '').trim() || null, reviewed_by_admin_id: req.user.admin_id, reviewed_at: new Date().toISOString() }).eq('id', application.id);
+  await supabase.from('sahan_creator_applications').update({ status: 'approved', admin_notes: String(req.body?.admin_notes || '').trim() || null, reviewed_by_admin_id: req.user.admin_id, reviewed_at: new Date().toISOString() }).eq('id', application.id);
   return res.json({ instructor });
 });
 
 app.post('/api/admin/creator-applications/:id/reject', auth, adminOnly, async (req, res) => {
   const notes = String(req.body?.admin_notes || '').trim() || 'Not approved at this time.';
-  const { data, error } = await supabase.from('creator_applications')
+  const { data, error } = await supabase.from('sahan_creator_applications')
     .update({ status: 'rejected', admin_notes: notes, reviewed_by_admin_id: req.user.admin_id, reviewed_at: new Date().toISOString() })
     .eq('id', req.params.id)
     .eq('status', 'pending')
