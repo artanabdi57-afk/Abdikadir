@@ -29,7 +29,7 @@ function NotFound() {
 
 function AuthPage({ mode }) {
   const navigate = useNavigate()
-  return <Auth mode={mode} onAuthenticated={() => navigate('/', { replace: true })} />
+  return <Auth mode={mode} onAuthenticated={() => navigate('/app', { replace: true })} />
 }
 
 function ResourceRoute({ kind }) {
@@ -60,31 +60,27 @@ function AppRoutes({ session, loading }) {
         <Route
           path="/"
           element={
-            <SahanApp
+            <SahanExperience
               onNavigateTeach={() => navigate('/teach')}
-              onNavigateHome={() => navigate('/')}
+              onNavigateApp={() => navigate(session ? '/app' : '/login')}
             />
           }
         />
         <Route
           path="/app/*"
           element={
-            <SahanApp
-              onNavigateTeach={() => navigate('/teach')}
-              onNavigateHome={() => navigate('/')}
-            />
+            session ? (
+              <SahanApp
+                onNavigateTeach={() => navigate('/teach')}
+                onNavigateHome={() => navigate('/')}
+              />
+            ) : <Navigate to="/login" replace />
           }
         />
 
         {/* Sahan Personalized Path & Survey Landing Experience */}
         <Route
-          path="/experience"
-          element={
-            <SahanExperience
-              onNavigateTeach={() => navigate('/teach')}
-              onNavigateApp={() => navigate('/')}
-            />
-          }
+          path="/experience" element={<Navigate to="/" replace />} 
         />
 
         {/* Instructor & Creator Portal */}
