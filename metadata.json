@@ -1,6 +1,6 @@
 {
-  "name": "Sahan",
-  "description": "The minimalist platform for live learning, teaching, and course certification.",
+  "name": "Remix Abdikadir",
+  "description": "Sahan Academy - Modern Multilingual Learning Platform with Student Profile Hub, Course Certificates, and Interactive Dashboard",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
