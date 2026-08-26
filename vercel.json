@@ -3,6 +3,7 @@
   "buildCommand": "cd sahan-app && npm run build",
   "outputDirectory": "sahan-app/dist",
   "rewrites": [
+    { "source": "/api/creator-applications", "destination": "/api/creator-applications.js" },
     { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
