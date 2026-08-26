@@ -115,8 +115,8 @@ function AuthCallback({ onLogin }) {
 }
 
 function Login({ onLogin, onNavigateHome }) {
-  const [email, setEmail] = useState('mariam@sahan.com');
-  const [password, setPassword] = useState('demo123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
@@ -150,15 +150,6 @@ function Login({ onLogin, onNavigateHome }) {
     }
   };
 
-  const fillQuick = (role) => {
-    if (role === 'admin') {
-      setEmail('admin@sahan.com');
-      setPassword('demo123');
-    } else {
-      setEmail('mariam@sahan.com');
-      setPassword('demo123');
-    }
-  };
 
   return (
     <div className="auth">
@@ -167,7 +158,7 @@ function Login({ onLogin, onNavigateHome }) {
           <span>S</span>
           <div>
             <b>Sahan</b>
-            <small>Teach & Admin Portal</small>
+            <small>Creator & Instructor Portal</small>
           </div>
         </div>
 
@@ -175,18 +166,10 @@ function Login({ onLogin, onNavigateHome }) {
           <LanguageSwitcher variant="pill" />
         </div>
 
-        <div className="eyebrow">INSTRUCTOR & PARTNER PORTAL</div>
-        <h1>Teach what you know.</h1>
-        <p className="muted">Manage courses, track earnings and request promotion on Sahan.</p>
+        <div className="eyebrow">CREATOR & INSTRUCTOR PORTAL</div>
+        <h1>Create, publish and teach.</h1>
+        <p className="muted">Publish your courses, manage your learners and track your earnings on Sahan.</p>
         
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-          <button type="button" className="secondary" style={{ flex: 1, padding: '8px', fontSize: '11px' }} onClick={() => fillQuick('instructor')}>
-            Demo Instructor
-          </button>
-          <button type="button" className="secondary" style={{ flex: 1, padding: '8px', fontSize: '11px' }} onClick={() => fillQuick('admin')}>
-            Demo Admin
-          </button>
-        </div>
 
         {err && <div className="alert">{err}</div>}
         {msg && <div className="success">{msg}</div>}
@@ -213,7 +196,7 @@ function Login({ onLogin, onNavigateHome }) {
             ← Back to learner platform
           </button>
         </div>
-        <p className="login-note" style={{ marginTop: '12px' }}>Instructor accounts are verified for quality. Demo logins provided above.</p>
+        <p className="login-note" style={{ marginTop: '12px' }}>Creator accounts are reviewed before they can publish courses on Sahan.</p>
       </div>
     </div>
   );
@@ -261,10 +244,10 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
           </span>
           <div>
             <b>Sahan</b>
-            <small>Teach & Admin</small>
+            <small>Creator Portal</small>
           </div>
         </div>
-        <div className="portal-label">{admin ? 'ADMIN CONTROL' : 'INSTRUCTOR PORTAL'}</div>
+        <div className="portal-label">{admin ? 'ADMIN CONTROL' : 'CREATOR PORTAL'}</div>
         <Nav go={handleMobileNav} items={navItems} />
 
         <div className="side-bottom">
@@ -290,13 +273,13 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
               ☰
             </button>
             <div>
-              <span className="crumb">{admin ? 'ADMIN' : 'TEACH'}</span>
-              <strong>{admin ? 'Sahan control center' : 'Instructor workspace'}</strong>
+              <span className="crumb">{admin ? 'ADMIN' : 'CREATOR'}</span>
+              <strong>{admin ? 'Sahan control center' : 'Creator workspace'}</strong>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <LanguageSwitcher variant="pill" />
-            <button className="header-link" onClick={onNavigateHome}>Open learner app ↗</button>
+            <button className="header-link" onClick={onNavigateHome}>Back to learner home</button>
           </div>
         </header>
 
