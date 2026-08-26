@@ -309,7 +309,7 @@ export default function App({ onNavigateTeach, onNavigateHome }) {
           {sidebarState === 'expanded' && (
             <div className="brand-info profile-mini-info">
               <strong style={{ fontSize: '12px' }}>{profile.fullName || 'Student'}</strong>
-              <small>{t('editProfile', 'Student Â· View Profile')}</small>
+              <small>{t('editProfile', 'Student · View Profile')}</small>
             </div>
           )}
         </button>
@@ -337,7 +337,7 @@ export default function App({ onNavigateTeach, onNavigateHome }) {
 
           {/* Quick Mobile Streak Badge */}
           <div className="mobile-streak-badge" title="Daily study streak: 3 days active">
-            <span>ðŸ”¥</span>
+            <span>🔥</span>
             <b>{t('streakDays', '3d streak')}</b>
           </div>
 
@@ -387,7 +387,7 @@ export default function App({ onNavigateTeach, onNavigateHome }) {
                         onClick={() => handleNotifClick(n)}
                       >
                         <div className={`notif-icon ${n.type}`}>
-                          {n.type === 'gold' ? 'ðŸ†' : n.type === 'blue' ? 'ðŸ”´' : n.type === 'green' ? 'âœ“' : 'ðŸ’¬'}
+                          {n.type === 'gold' ? '🏆' : n.type === 'blue' ? '🔴' : n.type === 'green' ? '✓' : '💬'}
                         </div>
                         <div className="notif-content">
                           <strong>{n.title}</strong>
@@ -433,7 +433,7 @@ export default function App({ onNavigateTeach, onNavigateHome }) {
                     <div>
                       <strong>{profile.fullName || 'Student'}</strong>
                       <small>{profile.email || 'student@sahan.com'}</small>
-                      <span className="profile-popover-badge">ðŸŽ“ {t('student', 'Student')}</span>
+                      <span className="profile-popover-badge">🎓 {t('student', 'Student')}</span>
                     </div>
                   </div>
 
@@ -607,7 +607,7 @@ export default function App({ onNavigateTeach, onNavigateHome }) {
       )}
 
       {/* Global Toast */}
-      {toast && <div className="toast">âœ“ {toast}</div>}
+      {toast && <div className="toast">✓ {toast}</div>}
     </div>
   )
 }
@@ -626,7 +626,7 @@ function HomeView({ go, onOpen, enrolled, profile, courses }) {
         <div>
           <div className="eyebrow-row">
             <span className="eyebrow">{t('studentDashboard', 'SAHAN STUDENT DASHBOARD')}</span>
-            <span className="streak-pill-tag">ðŸ”¥ {t('streakDays', '3-Day Streak')}</span>
+            <span className="streak-pill-tag">🔥 {t('streakDays', '3-Day Streak')}</span>
           </div>
           <h1>
             {t('welcomeBack', 'Welcome back')},<br />
@@ -648,7 +648,7 @@ function HomeView({ go, onOpen, enrolled, profile, courses }) {
         <button className="hero-card" onClick={() => onOpen(featured)}>
           <div className="hero-card-top">
             <span className="premium-label">
-              <span>ðŸŒŸ</span> {t('sponsoredClass', 'SPONSORED CLASS')}
+              <span>🌟</span> {t('sponsoredClass', 'SPONSORED CLASS')}
             </span>
             <span style={{ fontSize: '11px', color: '#cbd5e1', fontWeight: '600' }}>
               {t('instructor', 'Instructor')}: {featured.instructor || featured.creator}
@@ -658,7 +658,7 @@ function HomeView({ go, onOpen, enrolled, profile, courses }) {
             <small>{t('featuredPromo', 'FEATURED PROMOTION')}</small>
             <h2>{featured.title}</h2>
             <p>{t('practicalLessons', 'Practical lessons taught by experienced industry leaders.')}</p>
-            <span>â˜…â˜…â˜…â˜…â˜… {featured.rating} Â· {featured.students.toLocaleString()} {t('students', 'students')} Â· {featured.lessons} {t('lessons', 'lessons')}</span>
+            <span>★★★★★ {featured.rating} · {featured.students.toLocaleString()} {t('students', 'students')} · {featured.lessons} {t('lessons', 'lessons')}</span>
             <b>{t('startLearning', 'Start learning')} <Icon name={dir === 'rtl' ? 'chevronLeft' : 'arrow'} size={13} /></b>
           </div>
         </button>
@@ -694,7 +694,7 @@ function HomeView({ go, onOpen, enrolled, profile, courses }) {
             className="quick-cat-chip"
             onClick={() => go('discover')}
           >
-            <span>{cat === 'Business' ? 'ðŸ’¼' : cat === 'Technology' ? 'âš¡' : cat === 'Languages' ? 'ðŸ—£' : cat === 'Design' ? 'ðŸŽ¨' : 'ðŸ“ˆ'}</span>
+            <span>{cat === 'Business' ? '💼' : cat === 'Technology' ? '⚡' : cat === 'Languages' ? '🗣' : cat === 'Design' ? '🎨' : '📈'}</span>
             <span>{t(cat.toLowerCase(), cat)}</span>
           </button>
         ))}
@@ -733,9 +733,9 @@ function HomeView({ go, onOpen, enrolled, profile, courses }) {
             <span className={`rank-cover c${(i % 6) + 1}`}>{c.title[0]}</span>
             <span>
               <b>{c.title}</b>
-              <small>{c.creator} Â· {c.students.toLocaleString()} {t('students', 'students')}</small>
+              <small>{c.creator} · {c.students.toLocaleString()} {t('students', 'students')}</small>
             </span>
-            <span>â˜… {c.rating}</span>
+            <span>★ {c.rating}</span>
             <strong>{c.price ? `$${c.price}` : t('free', 'Free')}</strong>
             <Icon name={dir === 'rtl' ? 'chevronLeft' : 'arrow'} size={14} />
           </button>
@@ -912,7 +912,7 @@ function ProfileHubView({
     e.preventDefault()
     setProfile(form)
     setCustomCertName(form.fullName)
-    notify(t('savedSuccess', 'âœ“ Profile settings saved successfully!'))
+    notify(t('savedSuccess', '✓ Profile settings saved successfully!'))
   }
 
   return (
@@ -930,25 +930,25 @@ function ProfileHubView({
           <div className="profile-hub-info">
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <h2>{profile.fullName || 'Student'}</h2>
-              <span className="profile-popover-badge">ðŸŽ“ {t('student', 'Student')}</span>
+              <span className="profile-popover-badge">🎓 {t('student', 'Student')}</span>
             </div>
             <p>{profile.bio || 'Learner at Sahan Academy'}</p>
-            <small>{profile.email} Â· {profile.phone}</small>
+            <small>{profile.email} · {profile.phone}</small>
           </div>
         </div>
 
         {/* Quick Stats Rail */}
         <div className="profile-hub-stats">
           <div className="profile-stat-box">
-            <span>ðŸ”¥ 3 Days</span>
+            <span>🔥 3 Days</span>
             <small>{t('streakDays', 'Daily Streak')}</small>
           </div>
           <div className="profile-stat-box">
-            <span>ðŸ“š {enrolled.length}</span>
+            <span>📚 {enrolled.length}</span>
             <small>{t('navLearning', 'Enrolled Courses')}</small>
           </div>
           <div className="profile-stat-box">
-            <span>ðŸ† {certData.length}</span>
+            <span>🏆 {certData.length}</span>
             <small>{t('navCertificates', 'Certificates')}</small>
           </div>
         </div>
@@ -960,25 +960,25 @@ function ProfileHubView({
           className={`settings-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
           onClick={() => setActiveTab('profile')}
         >
-          ðŸ‘¤ {t('profileDetails', 'Profile Details')}
+          👤 {t('profileDetails', 'Profile Details')}
         </button>
         <button
           className={`settings-nav-btn ${activeTab === 'certificates' ? 'active' : ''}`}
           onClick={() => setActiveTab('certificates')}
         >
-          ðŸ† {t('navCertificates', 'Course Certificates')}
+          🏆 {t('navCertificates', 'Course Certificates')}
         </button>
         <button
           className={`settings-nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
           onClick={() => setActiveTab('settings')}
         >
-          âš™ï¸ {t('navSettings', 'Settings & Preferences')}
+          ⚙️ {t('navSettings', 'Settings & Preferences')}
         </button>
         <button
           className={`settings-nav-btn ${activeTab === 'security' ? 'active' : ''}`}
           onClick={() => setActiveTab('security')}
         >
-          ðŸ”’ {t('accountSecurity', 'Account Security')}
+          🔒 {t('accountSecurity', 'Account Security')}
         </button>
       </div>
 
@@ -1114,7 +1114,7 @@ function ProfileHubView({
                     <span className="certificate-thumb">S</span>
                     <div>
                       <b>{c.course}</b>
-                      <small>{c.issuer} Â· {c.date}</small>
+                      <small>{c.issuer} · {c.date}</small>
                     </div>
                     <em>{t('verified', 'Verified')}</em>
                   </button>
@@ -1149,7 +1149,7 @@ function ProfileHubView({
                     <span>SAHAN ACADEMY</span>
                   </div>
 
-                  <div className="cert-seal-badge">â˜…</div>
+                  <div className="cert-seal-badge">★</div>
 
                   <label>{t('certificateOfCompletion', 'CERTIFICATE OF COMPLETION')}</label>
                   <p style={{ margin: '8px 0 2px' }}>{t('proudlyPresentedTo', 'This is proudly presented to')}</p>
@@ -1168,7 +1168,7 @@ function ProfileHubView({
                       <span>{t('certId', 'Certificate ID')}: <b>{activeCert.serial}</b></span>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <span style={{ fontSize: '9px', display: 'block', color: '#16a34a', fontWeight: '700' }}>âœ“ {t('verifiedCredential', 'VERIFIED CREDENTIAL')}</span>
+                      <span style={{ fontSize: '9px', display: 'block', color: '#16a34a', fontWeight: '700' }}>✓ {t('verifiedCredential', 'VERIFIED CREDENTIAL')}</span>
                       <span>Issued by {activeCert.issuer}</span>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -1272,7 +1272,7 @@ function ProfileHubView({
               <div className="toggle-row">
                 <div>
                   <b>{t('dailyReminders', 'Daily Learning Reminders')}</b>
-                  <small>{t('dailyRemindersDesc', 'Get reminded when you havenâ€™t completed your daily lesson.')}</small>
+                  <small>{t('dailyRemindersDesc', 'Get reminded when you haven’t completed your daily lesson.')}</small>
                 </div>
                 <button
                   type="button"
@@ -1318,13 +1318,13 @@ function ProfileHubView({
                 <b>{t('googleAccount', 'Google Account Connection')}</b>
                 <small>{t('connectedAs', 'Connected with Google OAuth as')} {form.email}</small>
               </div>
-              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>âœ“ {t('connected', 'Connected')}</span>
+              <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: '700' }}>✓ {t('connected', 'Connected')}</span>
             </div>
 
             <div className="toggle-row">
               <div>
                 <b>{t('accountStatus', 'Account Status')}</b>
-                <small>{t('studentAccess', 'Student Access Â· Free Tier Active')}</small>
+                <small>{t('studentAccess', 'Student Access · Free Tier Active')}</small>
               </div>
               <span style={{ fontSize: '11px', color: '#6b7280' }}>{t('active', 'Active')}</span>
             </div>
@@ -1387,7 +1387,7 @@ function LiveView({ notify }) {
       </div>
 
       <div className="live-feature">
-        <span>â— {t('liveToday', 'LIVE TODAY Â· 5:00 PM')}</span>
+        <span>● {t('liveToday', 'LIVE TODAY · 5:00 PM')}</span>
         <h2>Power BI Dashboard Masterclass Q&A</h2>
         <p>{t('liveSessionMariam', 'Live troubleshooting, data models, and portfolio reviews with Mariam Hassan.')}</p>
         <button className="primary" onClick={() => notify('Reminder scheduled for 5:00 PM live session.')}>
@@ -1411,7 +1411,7 @@ function MessagesView({ notify }) {
       <div className="message-list">
         {[
           ['Mariam Hassan', 'Your Power BI practice files are ready for review.'],
-          ['Ayaan Teacher', 'See you at todayâ€™s English speaking session!'],
+          ['Ayaan Teacher', 'See you at today’s English speaking session!'],
           ['Sahan Academy Support', 'Welcome to Sahan! Let us know if you need anything.']
         ].map(([n, text]) => (
           <button className="message-row" key={n} onClick={() => notify(`Opening chat with ${n}...`)}>
@@ -1436,7 +1436,7 @@ function CourseCard({ course, onClick }) {
       <div className={`course-cover c${(course.id % 6) + 1}`}>
         {isPromoted && (
           <b style={{ background: '#ff6b00', color: '#fff', letterSpacing: '0.06em' }}>
-            â˜… {t('promoted', 'PROMOTED')}
+            ★ {t('promoted', 'PROMOTED')}
           </b>
         )}
         {!isPromoted && course.premium && <b>{t('premium', 'PREMIUM')}</b>}
@@ -1444,11 +1444,11 @@ function CourseCard({ course, onClick }) {
         <strong>{course.title[0]}</strong>
       </div>
       <div className="course-body">
-        <small>{course.level} Â· {course.lessons} {t('lessons', 'lessons')}</small>
+        <small>{course.level} · {course.lessons} {t('lessons', 'lessons')}</small>
         <h3>{course.title}</h3>
         <p>{course.instructor || course.creator}</p>
         <div>
-          <span>â˜… {course.rating} Â· {course.students.toLocaleString()} {t('students', 'students')}</span>
+          <span>★ {course.rating} · {course.students.toLocaleString()} {t('students', 'students')}</span>
           <b>{course.price ? `$${course.price}` : t('free', 'Free')}</b>
         </div>
       </div>
@@ -1469,13 +1469,13 @@ function CourseModal({ course, enrolled, saved, onClose, onBuy, onSave }) {
           <b>{course.title[0]}</b>
         </div>
         <div className="modal-body">
-          <div className="eyebrow">{course.premium ? 'SAHAN PREMIUM' : t('course', 'COURSE')} Â· {course.level}</div>
+          <div className="eyebrow">{course.premium ? 'SAHAN PREMIUM' : t('course', 'COURSE')} · {course.level}</div>
           <h2>{course.title}</h2>
           <p style={{ color: '#475569', fontWeight: '500', margin: '4px 0 10px' }}>
             {t('taughtBy', 'Taught by')} <strong>{course.instructor || course.creator}</strong>
           </p>
           <div className="modal-meta">
-            <span>â˜… {course.rating}</span>
+            <span>★ {course.rating}</span>
             <span>{course.students.toLocaleString()} {t('students', 'students')}</span>
             <span>{course.lessons} {t('lessons', 'lessons')}</span>
           </div>
@@ -1493,7 +1493,7 @@ function CourseModal({ course, enrolled, saved, onClose, onBuy, onSave }) {
               </button>
             )}
             <button className="ghost modal-save-btn" onClick={onSave}>
-              {saved ? `âœ“ ${t('savedInLibrary', 'Saved in Library')}` : t('saveForLater', 'Save for later')}
+              {saved ? `✓ ${t('savedInLibrary', 'Saved in Library')}` : t('saveForLater', 'Save for later')}
             </button>
           </div>
         </div>
