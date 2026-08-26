@@ -22,7 +22,7 @@ const api = async (path, options = {}) => {
   return body;
 };
 
-export default function TeachApp({ onNavigateHome }) {
+export default function TeachApp({ onNavigateHome, onNavigateSignup }) {
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(userKey) || 'null');
@@ -49,6 +49,8 @@ export default function TeachApp({ onNavigateHome }) {
     return <AuthCallback onLogin={(u) => { setUser(u); go(u.role === 'admin' ? '/admin/promotion-queue' : '/dashboard'); }} />;
   }
 
+  if (!user && path === '/apply') return <CreatorApplication onBack={() => go('/login')} onNavigateSignup={onNavigateSignup} />;
+
   if (!user) {
     return (
       <Login
@@ -57,6 +59,7 @@ export default function TeachApp({ onNavigateHome }) {
           go(u.role === 'admin' ? '/admin/promotion-queue' : '/dashboard');
         }}
         onNavigateHome={onNavigateHome}
+        onApply={() => go('/apply')}
       />
     );
   }
@@ -114,7 +117,7 @@ function AuthCallback({ onLogin }) {
   );
 }
 
-function Login({ onLogin, onNavigateHome }) {
+function Login({ onLogin, onNavigateHome, onApply }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -196,7 +199,56 @@ function Login({ onLogin, onNavigateHome }) {
             ← Back to learner platform
           </button>
         </div>
-        <p className="login-note" style={{ marginTop: '12px' }}>Creator accounts are reviewed before they can publish courses on Sahan.</p>
+        <p className="login-note" style={{ marginTop: '12px' }}>Already approved? Sign in above. New here? Create your learner account, then apply to become a creator.</p>
+        <button className="secondary wide" style={{ marginTop: '12px' }} onClick={onApply}>Apply to become a creator</button>
+      </div>
+    </div>
+  );
+}
+
+function CreatorApplication({ onBack, onNavigateSignup }) {
+  const [form, setForm] = useState({ name: '', email: '', teaching_topic: '', bio: '' });
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    try {
+      const result = await api('/creator-applications', { method: 'POST', body: JSON.stringify(form) });
+      setMessage(result.message);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="auth">
+      <div className="auth-card">
+        <div className="logo">
+          <span>S</span>
+          <div><b>Sahan</b><small>Creator application</small></div>
+        </div>
+        <div className="eyebrow">BECOME A CREATOR</div>
+        <h1>Teach on Sahan.</h1>
+        <p className="muted">First create your Sahan learner account. Then apply below using the same email. An admin reviews every application before courses can be published.</p>
+        {message ? <div className="success">{message}</div> : (
+          <form onSubmit={submit}>
+            <label>Full name<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
+            <label>Email used for your Sahan account<input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
+            <label>What will you teach?<input required value={form.teaching_topic} onChange={(e) => setForm({ ...form, teaching_topic: e.target.value })} placeholder="For example: Excel, design, English" /></label>
+            <label>Tell us about your experience<textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows="4" /></label>
+            {error && <div className="alert">{error}</div>}
+            <button className="primary wide" disabled={busy}>{busy ? 'Submitting…' : 'Submit application'}</button>
+          </form>
+        )}
+        <div className="or"><span />or<span /></div>
+        <button className="secondary wide" onClick={onNavigateSignup}>Create a learner account first</button>
+        <button className="header-link" style={{ marginTop: '16px' }} onClick={onBack}>Back to creator sign in</button>
       </div>
     </div>
   );
@@ -209,7 +261,7 @@ function Shell({ user, go, logout, admin, onNavigateHome, children }) {
         ['/admin/surveys', 'Student leads', '📋'],
         ['/admin/promotion-queue', 'Ad Control & Promos', '↗'],
         ['/admin/courses', 'Course ranking', '◎'],
-        ['/admin/instructors', 'Instructors', '♙'],
+        ['/admin/creator-applications', 'Creator applications', '♙'],
       ]
     : [
         ['/dashboard', 'Dashboard', '⌂'],
@@ -331,7 +383,7 @@ function AdminRouter({ path, go, setError }) {
   if (path === '/admin/surveys') return <AdminSurveys setError={setError} />;
   if (path === '/admin/promotion-queue') return <AdminQueue setError={setError} />;
   if (path === '/admin/courses') return <AdminCourses setError={setError} />;
-  if (path === '/admin/instructors') return <AdminInstructors setError={setError} />;
+  if (path === '/admin/creator-applications') return <AdminCreatorApplications setError={setError} />;
   return <AdminSurveys setError={setError} />;
 }
 
@@ -896,44 +948,7 @@ function Payouts({ setError }) {
 
 function AdminQueue({ setError }) {
   const [items, setItems] = useState([]);
-  const [campaigns, setCampaigns] = useState(() => {
-    try {
-      const stored = localStorage.getItem('sahan_promotion_campaigns');
-      if (stored) return JSON.parse(stored);
-    } catch {}
-    return [
-      {
-        id: 'camp_1',
-        courseId: 1,
-        courseTitle: 'Excel & Power BI for Real Work',
-        instructor: 'Mariam Hassan',
-        category: 'Business',
-        tier: 'Hero Spotlight Top Banner',
-        durationDays: 14,
-        fee: 35,
-        status: 'Active',
-        impressions: 1842,
-        clicks: 294,
-        enrolledLeads: 38,
-        activatedAt: new Date(Date.now() - 3 * 86400000).toISOString()
-      },
-      {
-        id: 'camp_2',
-        courseId: 2,
-        courseTitle: 'Modern English Speaking & Fluency',
-        instructor: 'Ayaan Teacher',
-        category: 'Languages',
-        tier: 'Category #1 Sponsored Pin',
-        durationDays: 7,
-        fee: 19,
-        status: 'Active',
-        impressions: 940,
-        clicks: 132,
-        enrolledLeads: 19,
-        activatedAt: new Date(Date.now() - 1 * 86400000).toISOString()
-      }
-    ];
-  });
+  const [campaigns, setCampaigns] = useState([]);
   const [activeSpotlightId, setActiveSpotlightId] = useState(() => {
     return Number(localStorage.getItem('sahan_promoted_course_id') || 1);
   });
@@ -1190,6 +1205,44 @@ function AdminCourses({ setError }) {
   );
 }
 
+function AdminCreatorApplications({ setError }) {
+  const [items, setItems] = useState([]);
+  const [busyId, setBusyId] = useState('');
+
+  const load = () => api('/admin/creator-applications?status=pending').then((data) => setItems(data.applications || [])).catch((error) => setError(error.message));
+  useEffect(() => { load(); }, []);
+
+  const review = async (item, approve) => {
+    setBusyId(item.id);
+    try {
+      await api('/admin/creator-applications/' + item.id + '/' + (approve ? 'approve' : 'reject'), { method: 'POST', body: JSON.stringify({}) });
+      load();
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setBusyId('');
+    }
+  };
+
+  return (
+    <Page title="Creator applications" sub="Approve applicants after they have created a learner account with the same email. Approved applicants can sign in and publish courses.">
+      <section className="panel table">
+        <div className="table-head"><span>Applicant</span><span>What they teach</span><span>Experience</span><span>Applied</span><span>Decision</span></div>
+        {items.map((item) => (
+          <div className="table-row" key={item.id}>
+            <div><b>{item.name}</b><small>{item.email}</small></div>
+            <span>{item.teaching_topic}</span>
+            <span>{item.bio || '—'}</span>
+            <span>{new Date(item.created_at).toLocaleDateString()}</span>
+            <div><button className="approve" disabled={busyId === item.id} onClick={() => review(item, true)}>Approve</button><button className="reject" disabled={busyId === item.id} onClick={() => review(item, false)}>Reject</button></div>
+          </div>
+        ))}
+        {!items.length && <Empty text="No creator applications are waiting for review." />}
+      </section>
+    </Page>
+  );
+}
+
 function AdminInstructors({ setError }) {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState({ name: '', email: '', commission_rate: 0.7 });
@@ -1267,75 +1320,8 @@ function AdminInstructors({ setError }) {
   );
 }
 
-const defaultSurveyData = [
-  {
-    id: 'survey_1',
-    fullName: 'Abdikadir Mohamed',
-    email: 'student@sahan.com',
-    phone: '+252 61 2345678',
-    avatarUrl: '',
-    interests: ['Excel & Data Analysis', 'Coding & Computer Science'],
-    goal: 'Advance my career / Get a job',
-    level: 'Beginner',
-    style: 'Step-by-step video courses',
-    submittedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-    status: 'New Lead'
-  },
-  {
-    id: 'survey_2',
-    fullName: 'Fatima Zahra',
-    email: 'fatima.z@gmail.com',
-    phone: '+252 61 9876543',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80',
-    interests: ['Graphic & UI Design', 'AI & Modern Work'],
-    goal: 'Start freelancing & client work',
-    level: 'Intermediate (some experience)',
-    style: 'Hands-on practice & projects',
-    submittedAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-    status: 'Contacted'
-  },
-  {
-    id: 'survey_3',
-    fullName: 'Guled Warsame',
-    email: 'guled.w@outlook.com',
-    phone: '+252 61 5554321',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80',
-    interests: ['Excel & Data Analysis', 'Personal Finance & Investing'],
-    goal: 'Launch an online business',
-    level: 'Beginner',
-    style: 'Live interactive workshops',
-    submittedAt: new Date(Date.now() - 3600000 * 14).toISOString(),
-    status: 'Enrolled'
-  },
-  {
-    id: 'survey_4',
-    fullName: 'Hodan Yusuf',
-    email: 'hodan.y@gmail.com',
-    phone: '+252 61 8882211',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80',
-    interests: ['Languages & Speaking', 'Business & Entrepreneurship'],
-    goal: 'Advance my career / Get a job',
-    level: 'Intermediate (some experience)',
-    style: 'A balanced combination',
-    submittedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-    status: 'New Lead'
-  }
-];
-
 function AdminSurveys({ setError }) {
-  const [surveys, setSurveys] = useState(() => {
-    try {
-      const stored = localStorage.getItem('sahan_learner_surveys');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-      localStorage.setItem('sahan_learner_surveys', JSON.stringify(defaultSurveyData));
-      return defaultSurveyData;
-    } catch {
-      return defaultSurveyData;
-    }
-  });
+  const [surveys, setSurveys] = useState([]);
 
   const [filterTopic, setFilterTopic] = useState('All');
   const [search, setSearch] = useState('');
