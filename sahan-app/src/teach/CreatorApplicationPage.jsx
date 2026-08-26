@@ -8,16 +8,35 @@ export default function CreatorApplicationPage({session,onBack,onNavigateSignup}
  const[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
  const submit=async(e)=>{
   e.preventDefault();setBusy(true);setError('');setMessage('');
-  if(!session){setError('Please log in to your Sahan learner account first, then return here to apply.');setBusy(false);return;}
-  const accountEmail=(session.user.email||'').trim().toLowerCase();const email=form.email.trim().toLowerCase();
-  if(!accountEmail||email!==accountEmail){setError(`Use the same email as your logged-in Sahan account (${accountEmail||'your account email'}).`);setBusy(false);return;}
-  const{error:insertError}=await supabase.from('sahan_creator_applications').insert({user_id:session.user.id,full_name:form.name.trim(),email,teaching_topic:form.teaching_topic.trim(),expertise:form.teaching_topic.trim(),experience:form.bio.trim(),bio:form.bio.trim(),name:form.name.trim()}).select().single();
-  if(insertError){
-   console.error('creator application submission failed',insertError);
-   if(insertError.code==='23505')setError('You already have a creator application for this Sahan account. It is already pending or has already been reviewed.');
-   else setError(insertError.message||'Unable to submit your application.');
-  }else setMessage('Application submitted successfully. Your application is now pending admin review.');
-  setBusy(false);
+  try{
+   if(!session?.user){setError('Please log in to your Sahan learner account first, then return here to apply.');return;}
+   const accountEmail=(session.user.email||'').trim().toLowerCase();
+   const email=form.email.trim().toLowerCase();
+   if(!accountEmail||email!==accountEmail){setError(`Use the same email as your logged-in Sahan account (${accountEmail||'your account email'}).`);return;}
+
+   // Use only the standardized Sahan application schema. Do not send legacy name/bio/expertise columns.
+   const {data:existing,error:checkError}=await supabase
+    .from('sahan_creator_applications')
+    .select('id,status')
+    .eq('user_id',session.user.id)
+    .maybeSingle();
+   if(checkError)throw checkError;
+   if(existing){setError(`You already have a creator application with status: ${existing.status}.`);return;}
+
+   const {error:insertError}=await supabase
+    .from('sahan_creator_applications')
+    .insert({
+     user_id:session.user.id,
+     full_name:form.name.trim(),
+     email,
+     teaching_topic:form.teaching_topic.trim()
+    });
+   if(insertError)throw insertError;
+   setMessage('Application submitted successfully. Your application is now pending admin review.');
+  }catch(err){
+   console.error('creator application submission failed',err);
+   setError(err?.message||'Unable to submit your application.');
+  }finally{setBusy(false);}
  };
  const update=(key)=>(e)=>setForm(f=>({...f,[key]:e.target.value}));
  return <div className="auth"><div className="auth-card">
