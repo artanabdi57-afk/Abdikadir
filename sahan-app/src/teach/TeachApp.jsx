@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext.jsx';
 import LanguageSwitcher from '../components/LanguageSwitcher.jsx';
+import { supabase } from '../lib/supabase.js';
 import '../styles/teach.css';
 
 const API = '/api';
@@ -216,9 +217,21 @@ function CreatorApplication({ onBack, onNavigateSignup }) {
     event.preventDefault();
     setBusy(true);
     setError('');
+    setMessage('');
     try {
-      const result = await api('/creator-applications', { method: 'POST', body: JSON.stringify(form) });
-      setMessage(result.message);
+      // Calls the submit_creator_application Postgres function directly via
+      // Supabase (bypassing the separate /api Express layer, which is not
+      // reliably reachable in production). The function validates the email
+      // against an existing, confirmed Sahan learner account itself, so no
+      // client-side session is required here.
+      const { data, error: rpcError } = await supabase.rpc('submit_creator_application', {
+        p_name: form.name.trim(),
+        p_email: form.email.trim().toLowerCase(),
+        p_teaching_topic: form.teaching_topic.trim(),
+        p_bio: form.bio.trim() || null,
+      });
+      if (rpcError) throw new Error(rpcError.message);
+      setMessage(data?.message || 'Application submitted successfully.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1708,4 +1721,3 @@ function AdminSurveys({ setError }) {
     </Page>
   );
 }
-
