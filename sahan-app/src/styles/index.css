@@ -105,5 +105,215 @@ a {
   }
 }
 
+/* =========================================================
+   Sahan Messages — modern Instagram-inspired inbox
+   Keeps the existing message data/actions but gives the
+   inbox a real messaging-product visual hierarchy.
+   ========================================================= */
 
+.message-list {
+  width: min(1080px, 100%);
+  min-height: 590px;
+  margin: 28px auto 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #fff;
+  border: 1px solid #e7e7ea;
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(17, 24, 39, 0.06);
+  overflow: hidden;
+  position: relative;
+}
 
+.message-list::before {
+  content: 'Messages';
+  display: block;
+  padding: 14px 18px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #8b8b93;
+  border-bottom: 1px solid #f0f0f2;
+}
+
+.message-row {
+  width: 100%;
+  min-height: 78px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  text-align: left;
+  color: #111827;
+  background: #fff;
+  border-radius: 15px;
+  border: 1px solid transparent;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.message-row:hover {
+  background: #f7f7f8;
+  border-color: #ececef;
+  transform: translateY(-1px);
+}
+
+.message-row:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: -2px;
+}
+
+.message-row .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+  background: linear-gradient(145deg, #eef2f7, #dce4ef);
+  border: 1px solid #d9e0ea;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, .06);
+}
+
+.message-row:nth-child(3) .avatar {
+  background: linear-gradient(145deg, #fff0e5, #ffe0c8);
+  border-color: #ffd0ad;
+}
+
+.message-row > span:nth-child(2) {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+.message-row b {
+  display: block;
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 750;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-row p,
+.message-row small,
+.message-row span:not(.avatar) {
+  font-size: 13px;
+  line-height: 1.35;
+  color: #737780;
+}
+
+.message-row::after {
+  content: '›';
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #9a9ca3;
+  font-size: 22px;
+  font-weight: 400;
+  transition: background .16s ease, color .16s ease, transform .16s ease;
+}
+
+.message-row:hover::after {
+  background: #ececef;
+  color: #111827;
+  transform: translateX(2px);
+}
+
+/* Turn the message page heading into a cleaner DM header. */
+.content-wrap > .page-title:has(+ .message-list),
+.content-wrap > div:has(+ .message-list) {
+  width: min(1080px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.message-list + * {
+  margin-top: 18px;
+}
+
+/* Desktop: give the inbox more breathing room like a social DM product. */
+@media (min-width: 900px) {
+  .message-list {
+    padding: 10px;
+  }
+
+  .message-row {
+    min-height: 84px;
+    padding: 14px 18px;
+  }
+}
+
+/* Mobile: edge-to-edge inbox, larger tap targets, less decoration. */
+@media (max-width: 700px) {
+  .message-list {
+    width: calc(100% + 24px);
+    min-height: 0;
+    margin-left: -12px;
+    margin-right: -12px;
+    margin-top: 20px;
+    padding: 5px;
+    border-radius: 18px;
+    box-shadow: none;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .message-list::before {
+    padding: 12px 14px 9px;
+  }
+
+  .message-row {
+    min-height: 72px;
+    grid-template-columns: 48px minmax(0, 1fr) 24px;
+    gap: 11px;
+    padding: 10px 9px;
+    border-radius: 13px;
+  }
+
+  .message-row .avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .message-row b {
+    font-size: 13px;
+  }
+
+  .message-row p,
+  .message-row small,
+  .message-row span:not(.avatar) {
+    font-size: 12px;
+  }
+
+  .message-row::after {
+    width: 24px;
+    height: 24px;
+    font-size: 19px;
+  }
+}
+
+[dir="rtl"] .message-row {
+  text-align: right;
+}
+
+[dir="rtl"] .message-row > span:nth-child(2) {
+  align-items: flex-end;
+}
+
+[dir="rtl"] .message-row::after {
+  content: '‹';
+}
